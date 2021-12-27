@@ -19,7 +19,7 @@ This is a real-time ray-tracing game engine for MacOS.
 Portals facing eachother: \
 ![img](images/spiral1.png) \
 ![img](images/portaltn.png) \
-Glass sphere bends different colors different amounts: \
+Mirror sphere: \
 ![img](images/sphere1.png) \
 Cubic prism: \
 ![img](images/cube1.png) \
