@@ -208,6 +208,17 @@ class gameObject{
             l.load(&v,t*transform)
         }
     }
+    func array_load(_ v:UnsafeMutableRawPointer,_ i:inout int,_ t:mat4){
+        if(visible){
+            var sc=toScene(t*transform)
+            let size=sizeof(sceneObject())
+            memcpy(v+i*size,&sc,size)
+            i+=1
+        }
+        for l in leafs{
+            l.array_load(v,&i,t*transform)
+        }
+    }
     func update(){}
     func updateTree(){
         update()

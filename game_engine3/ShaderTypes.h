@@ -54,6 +54,8 @@ typedef struct{
     vector_float3 color;
 }sceneObject;
 
+#define MAX_OBJECTS 40
+
 typedef struct{
     float iTime;
     vector_float2 iMouse;
@@ -70,7 +72,7 @@ typedef struct{
     matrix_float4x4 virtCamTransform;
     matrix_float4x4 virtCamInverse;
     float zoom;
-    sceneObject objs[40];
+    sceneObject objs[MAX_OBJECTS];
 }Uniforms;
 
 

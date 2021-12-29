@@ -204,10 +204,11 @@ class Renderer:NSObject,MTKViewDelegate{
         cursor.visible=bind!.on.wrappedValue
         
         
-        var obj:[sceneObject]=[]
-        root.load(&obj,id())
-        uniforms[0].objNum=Int32(obj.count);
-        memcpy(&uniforms[0].objs,&obj,obj.count*sizeof(sceneObject()))
+        var idx:int=0
+        root.array_load(&uniforms[0].objs,&idx,id())
+        uniforms[0].objNum=Int32(idx);
+        assert(idx<MAX_OBJECTS)
+    
     }
     func onLeftClick(){}
     func onRightClick(){}
