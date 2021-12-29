@@ -13,6 +13,15 @@
 #define NSInteger metal::int32_t
 #else
 #import <Foundation/Foundation.h>
+#import <sys/time.h>
+#import <assert.h>
+
+float _itime(){
+    struct timeval tp;
+    assert(-1!=gettimeofday(&tp,NULL));
+    return (tp.tv_sec%(60*60*24))+tp.tv_usec/1E6;
+}
+
 #endif
 
 #include <simd/simd.h>

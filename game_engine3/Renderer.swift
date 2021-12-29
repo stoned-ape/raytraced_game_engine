@@ -82,7 +82,7 @@ class Renderer:NSObject,MTKViewDelegate{
         commandEncoder.setTexture(drawable.texture, index: 0)
         var w = pipelineState.threadExecutionWidth
         var h = pipelineState.maxTotalThreadsPerThreadgroup / w
-        print("w: \(w) h: \(h)")
+        //print("w: \(w) h: \(h)")
         iRes=vec2(float(view.drawableSize.width),float(view.drawableSize.height))
         let threadsPerThreadgroup = MTLSizeMake(w, h, 1)
         let dw=Int(view.drawableSize.width)
@@ -162,7 +162,7 @@ class Renderer:NSObject,MTKViewDelegate{
         
         root.addLeaf(bx)
         
-        let scr=screen().setTransform(trans(0,0,10))
+        let scr=screen().setTransform(trans(0,0,7))
 //        screen.material = .screen
         root.addLeaf(scr)
         
@@ -177,8 +177,8 @@ class Renderer:NSObject,MTKViewDelegate{
         let bottomLeft=vec2(float(globalwindow!.frame.minX),float(globalwindow!.frame.minY))
  
         frameCount+=1
-        frameRate=1/(time()-uniforms[0].iTime)
-        uniforms[0].iTime=time()
+        frameRate=float(maxBuffersInFlight)/(_itime()-uniforms[0].iTime)
+        uniforms[0].iTime=_itime()
         uniforms[0].iMouse=iMouse-bottomLeft
         uniforms[0].iRes=iRes
         uniforms[0].light=normalize(light)
@@ -187,10 +187,6 @@ class Renderer:NSObject,MTKViewDelegate{
             uniforms[0].virtCamInverse=virtCam!.transform.inverse
         }
         
-        
-        
-        
-        //if(frameCount%20==0){print(cameraTransform.position())}
         
         if let p=portals{
             uniforms[0].p1Transform=p.transform.inverse
@@ -219,7 +215,9 @@ class Renderer:NSObject,MTKViewDelegate{
     func controlls(){
         let theta = map(uniforms[0].iMouse.x,0,iRes.x,-PI,PI);
         let phi = map(uniforms[0].iMouse.y,0,iRes.y,-PI/2,PI/2);
-        let speed:float=0.1*20/frameRate
+        let speed:float=0.1*20.0/frameRate
+        
+        print(frameRate," ",_itime())
         
         //cameraTransform=trans(cameraTransform.position())
         viewTransform=roty(-theta)*rotx(phi);

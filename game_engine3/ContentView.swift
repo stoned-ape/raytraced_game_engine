@@ -8,6 +8,15 @@
 import SwiftUI
 import MetalKit
 
+
+struct bindings{
+    var geo:Binding<Geometry>
+    var mat:Binding<Material>
+    var on :Binding<bool>
+    var zdist:Binding<float>
+    var scale:Binding<float>
+}
+
 struct ContentView:View{
     @State private var geo=Geometry.sphere
     @State private var mat=Material.diffuse
@@ -17,7 +26,7 @@ struct ContentView:View{
     var body:some View{
         VStack{
             
-            gameview(bind:bindings($geo,$mat,$on,$zdist,$scale))
+            gameview(bind:bindings(geo:$geo,mat:$mat,on:$on,zdist:$zdist,scale:$scale))
             
             HStack{
                 Spacer()
@@ -44,24 +53,6 @@ struct ContentView:View{
     }
 }
 
-class bindings{
-    var geo:Binding<Geometry>
-    var mat:Binding<Material>
-    var on :Binding<bool>
-    var zdist:Binding<float>
-    var scale:Binding<float>
-    init(_ g:Binding<Geometry>,
-         _ m:Binding<Material>,
-         _ o:Binding<bool>,
-         _ z:Binding<float>,
-         _ s:Binding<float>){
-        geo=g
-        mat=m
-        on=o
-        zdist=z
-        scale=s
-    }
-}
 
 struct gameview:NSViewRepresentable{
     let mtkview=MTKView()

@@ -35,10 +35,6 @@ func rand()->float{
     return float.random(in: 0...1)
 }
 
-func time()->float{
-    return float(ProcessInfo.processInfo.systemUptime)
-}
-
 func sizeof<T:Any>(_ a:T)->int{
     return MemoryLayout.size(ofValue:a)
 }
@@ -57,15 +53,6 @@ func m4v3(_ m:mat4,_ v:vec3,_ transform:bool)->vec3{
 
 
 extension mat4{
-    init<T: BinaryFloatingPoint>
-        (_ i0:T,_ i1:T,_ i2:T,_ i3:T,_ i4:T,_ i5:T,_ i6:T,_ i7:T,
-         _ i8:T,_ i9:T,_ ia:T,_ ib:T,_ ic:T,_ id:T,_ ie:T,_ iff:T){
-        self.init(
-            vec4(float(i0),float(i1),float(i2),float(i3)),
-            vec4(float(i4),float(i5),float(i6),float(i7)),
-            vec4(float(i8),float(i9),float(ia),float(ib)),
-            vec4(float(ic),float(id),float(ie),float(iff)))
-    }
     func position()->vec3{
         let v=self[3]
         return vec3(v.x,v.y,v.z)
@@ -76,18 +63,18 @@ extension mat4{
 
 func id()->mat4{
     return mat4(
-    1.0,0.0,0.0,0.0,
-    0.0,1.0,0.0,0.0,
-    0.0,0.0,1.0,0.0,
-    0.0,0.0,0.0,1.0
+    vec4(1.0,0.0,0.0,0.0),
+    vec4(0.0,1.0,0.0,0.0),
+    vec4(0.0,0.0,1.0,0.0),
+    vec4(0.0,0.0,0.0,1.0)
     );
 }
 func trans(_ v:vec3)->mat4{
     return mat4(
-    1.0,0.0,0.0,0.0,
-    0.0,1.0,0.0,0.0,
-    0.0,0.0,1.0,0.0,
-    v.x,v.y,v.z,1.0
+    vec4(1.0,0.0,0.0,0.0),
+    vec4(0.0,1.0,0.0,0.0),
+    vec4(0.0,0.0,1.0,0.0),
+    vec4(v.x,v.y,v.z,1.0)
     );
 }
 func trans(_ x:float,_ y:float,_ z:float)->mat4{
@@ -95,10 +82,10 @@ func trans(_ x:float,_ y:float,_ z:float)->mat4{
 }
 func scale(_ v:vec3)->mat4{
     return mat4(
-    v.x,0.0,0.0,0.0,
-    0.0,v.y,0.0,0.0,
-    0.0,0.0,v.z,0.0,
-    0.0,0.0,0.0,1.0
+    vec4(v.x,0.0,0.0,0.0),
+    vec4(0.0,v.y,0.0,0.0),
+    vec4(0.0,0.0,v.z,0.0),
+    vec4(0.0,0.0,0.0,1.0)
     );
 }
 func scale(_ x:float,_ y:float,_ z:float)->mat4{
@@ -111,30 +98,30 @@ func rotx(_ theta:float)->mat4{
     let s=sin(theta);
     let c=cos(theta);
     return mat4(
-    1.0,0.0,0.0,0.0,
-    0.0,c  ,s  ,0.0,
-    0.0,-s ,c  ,0.0,
-    0.0,0.0,0.0,1.0
+    vec4(1.0,0.0,0.0,0.0),
+    vec4(0.0,c  ,s  ,0.0),
+    vec4(0.0,-s ,c  ,0.0),
+    vec4(0.0,0.0,0.0,1.0)
     );
 }
 func roty(_ theta:float)->mat4{
     let s=sin(theta);
     let c=cos(theta);
     return mat4(
-    c  ,0.0,-s ,0.0,
-    0.0,1.0,0.0,0.0,
-    s  ,0.0,c  ,0.0,
-    0.0,0.0,0.0,1.0
+    vec4(c  ,0.0,-s ,0.0),
+    vec4(0.0,1.0,0.0,0.0),
+    vec4(s  ,0.0,c  ,0.0),
+    vec4(0.0,0.0,0.0,1.0)
     );
 }
 func rotz(_ theta:float)->mat4{
     let s=sin(theta);
     let c=cos(theta);
     return mat4(
-    c  ,s  ,0.0,0.0,
-    -s ,c  ,0.0,0.0,
-    0.0,0.0,1.0,0.0,
-    0.0,0.0,0.0,1.0
+    vec4(c  ,s  ,0.0,0.0),
+    vec4(-s ,c  ,0.0,0.0),
+    vec4(0.0,0.0,1.0,0.0),
+    vec4(0.0,0.0,0.0,1.0)
     );
 }
 
@@ -526,6 +513,9 @@ class vcam:gameObject{
         let cn=cone().setTransform(trans(0,0,-0.125)*rotx(-PI/2)*scale(0.375))
         addLeaf(bx)
         addLeaf(cn)
+    }
+    override func update(){
+        transform*=roty(0.02)
     }
 }
     
