@@ -14,7 +14,6 @@ using namespace metal;
 
 constant float PI=3.14159265;
 constant float ambient=.4;
-constant float etaR=1.5;
 constant float3 etaRC(1.5,1.55,1.6);//real world values: {1.50917,1.52534,1.51609};
 
 
@@ -509,7 +508,6 @@ float3 skycolor(ray r,constant Uniforms &uni [[buffer(2)]]){
     sky=abs(sky);
     sky*=float3(1,0,.8);
     float phi=atan(r.v.y/length(r.v.xz));
-    float h=5;
     
     sky+=1.5*float3(.5,0,1)*(1-exp(-.2*abs(phi-PI/2)));
     

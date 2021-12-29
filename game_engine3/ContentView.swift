@@ -9,6 +9,28 @@ import SwiftUI
 import MetalKit
 
 
+enum Material:string,CaseIterable{
+    case diffuse  = "diffuse"
+    case specular = "specular"
+    case glass    = "glass"
+    case portal1  = "portal1"
+    case portal2  = "portal2"
+    case screen   = "screen"
+    case emmisive = "emmisive"
+}
+
+enum Geometry:string,CaseIterable{
+    case sphere   = "sphere"
+    case plane    = "plane"
+    case cylinder = "cylinder"
+    case cube     = "cube"
+    case poll     = "poll"
+    case cone     = "cone"
+    case triangle = "triangle"
+}
+
+
+
 struct bindings{
     var geo:Binding<Geometry>
     var mat:Binding<Material>

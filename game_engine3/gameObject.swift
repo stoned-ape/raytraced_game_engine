@@ -125,41 +125,22 @@ func rotz(_ theta:float)->mat4{
     );
 }
 
-enum Material:string,CaseIterable{
-    case diffuse  = "diffuse"
-    case specular = "specular"
-    case glass    = "glass"
-    case portal1  = "portal1"
-    case portal2  = "portal2"
-    case screen   = "screen"
-    case emmisive = "emmisive"
-}
-
-enum Geometry:string,CaseIterable{
-    case sphere   = "sphere"
-    case plane    = "plane"
-    case cylinder = "cylinder"
-    case cube     = "cube"
-    case poll     = "poll"
-    case cone     = "cone"
-    case triangle = "triangle"
-}
 
 class gameObject{
     var transform:mat4=id()
-    var material=Material.diffuse
-    var geometry=Geometry.sphere
+    var material:en_material=DIFFUSE
+    var geometry:en_geometry=SPHERE
     var leafs:[gameObject]=[]
     var visible=true
     var color:vec3=normalize(vec3(rand(),rand(),rand()))
     var instanceUpdate:(gameObject)->Void={_ in }
     var ex:bool=true
     init(){}
-    init(_ m:Material,_ g:Geometry){
+    init(_ m:en_material,_ g:en_geometry){
         material=m
         geometry=g
     }
-    init(_ m:Material,_ g:Geometry,_ t:mat4){
+    init(_ m:en_material,_ g:en_geometry,_ t:mat4){
         material=m
         geometry=g
         transform=t
@@ -181,22 +162,24 @@ class gameObject{
     }
     func toScene(_ t:mat4)->sceneObject{
         var s=sceneObject()
-        var i:Int32=0
-        for mat in Material.allCases{
-            if mat==material{
-                s.material=i
-                break
-            }
-            i+=1
-        }        
-        i=0
-        for geo in Geometry.allCases{
-            if geo==geometry{
-                s.geometry=i
-                break
-            }
-            i+=1
-        }
+        s.material=material
+//        var i:Int32=0
+//        for mat in en_material.allCases{
+//            if mat==material{
+//                s.material=en_material(i)
+//                break
+//            }
+//            i+=1
+//        }
+//        i=0
+//        for geo in Geometry.allCases{
+//            if geo==geometry{
+//                s.geometry=en_geometry(i)
+//                break
+//            }
+//            i+=1
+//        }
+        s.geometry=geometry
         s.transform=t
         s.inverse=t.inverse
         s.color=color
@@ -234,7 +217,7 @@ class gameObject{
         }
         return self
     }
-    func setMaterial(_ m:Material)->gameObject{
+    func setMaterial(_ m:en_material)->gameObject{
         material=m
         for l in leafs{
             _=l.setMaterial(m);
@@ -260,10 +243,10 @@ class gameObject{
 
 class plane:gameObject{
     override init(){
-        super.init(.diffuse,.plane)
+        super.init(DIFFUSE,PLANE)
     }
     init(_ p:vec3,_ n:vec3){
-        super.init(.diffuse,.plane)
+        super.init(DIFFUSE,PLANE)
         let q=quat(from:vec3(0,1,0),to:normalize(n))
         transform=trans(p)*mat4(q)
         color=normalize(vec3(rand(),rand(),rand()))
@@ -272,10 +255,10 @@ class plane:gameObject{
 
 class cylinder:gameObject{
     override init(){
-        super.init(.diffuse,.cylinder)
+        super.init(DIFFUSE,CYLINDER)
     }
     init(_ p:vec3,_ n:vec3){
-        super.init(.diffuse,.cylinder)
+        super.init(DIFFUSE,CYLINDER)
         let q=quat(from:vec3(0,1,0),to:normalize(n))
         transform=trans(p)*mat4(q)
     }
@@ -283,20 +266,20 @@ class cylinder:gameObject{
 
 class sphere:gameObject{
     override init(){
-        super.init(.diffuse,.sphere)
+        super.init(DIFFUSE,SPHERE)
     }
     init(_ p:vec3,_ r:float){
-        super.init(.diffuse,.sphere)
+        super.init(DIFFUSE,SPHERE)
         transform=trans(p)*scale(r)
     }
 }
 
 class box:gameObject{
     override init(){
-        super.init(.diffuse,.cube)
+        super.init(DIFFUSE,CUBE)
     }
-    init(_ p:vec3,_ sc:vec3,_ material:Material){
-        super.init(material,.cube)
+    init(_ p:vec3,_ sc:vec3,_ material:en_material){
+        super.init(material,CUBE)
         transform=scale(sc)*trans(p)
     }
 }
@@ -309,7 +292,7 @@ class block:box{
 
 class axis:gameObject{
     init(_ t:mat4){
-        super.init(.diffuse,.sphere)
+        super.init(DIFFUSE,SPHERE)
         visible=false
         let x=cylinder(vec3(0),vec3(1,0,0))
         let y=cylinder(vec3(0),vec3(0,1,0))
@@ -326,10 +309,10 @@ class axis:gameObject{
 
 class cone:gameObject{
     override init(){
-        super.init(.diffuse,.cone)
+        super.init(DIFFUSE,CONE)
     }
     init(_ p:vec3,_ n:vec3){
-        super.init(.diffuse,.cone)
+        super.init(DIFFUSE,CONE)
         let q=quat(from:vec3(0,1,0),to:normalize(n))
         transform=trans(p)*mat4(q)
     }
@@ -337,10 +320,10 @@ class cone:gameObject{
 
 class triangle:gameObject{
     override init(){
-        super.init(.diffuse,.triangle)
+        super.init(DIFFUSE,TRIANGLE)
     }
     init(_ v1:vec3,_ v2:vec3,_ v3:vec3){
-        super.init(.diffuse,.triangle)
+        super.init(DIFFUSE,TRIANGLE)
         transform=mat4(vec4(v1,0),vec4(v2,0),vec4(v3,0),vec4(vec3(0),1))
     }
 }
@@ -360,7 +343,7 @@ class blockWorld:gameObject{
     var mtx:[[[gameObject]]]=[]
     var size:int=0
     init(_ s:int){
-        super.init(.diffuse,.sphere)
+        super.init(DIFFUSE,SPHERE)
         visible=false
         size=s
         let nm=GKNoiseMap(GKNoise(GKPerlinNoiseSource()))
@@ -404,7 +387,7 @@ class blockWorld:gameObject{
 
 class octahedron:gameObject{
     override init(){
-        super.init(.diffuse,.sphere)
+        super.init(DIFFUSE,SPHERE)
         visible=false
         addLeaf(triangle([1,0,0],[0,1,0],[0,0,-1]))
         addLeaf(triangle([1,0,0],[0,1,0],[0,0,1]))
@@ -419,7 +402,7 @@ class octahedron:gameObject{
 
 class tetrahedron:gameObject{
     override init(){
-        super.init(.diffuse,.sphere)
+        super.init(DIFFUSE,SPHERE)
         visible=false
         var t=vec3(0.5)
         addLeaf(triangle([1,0,0],[0,1,0],[0,0,1]).addTransform(trans(t)))
@@ -431,7 +414,7 @@ class tetrahedron:gameObject{
 
 class camera:gameObject{
     init(_ p:vec3){
-        super.init(.diffuse,.sphere)
+        super.init(DIFFUSE,SPHERE)
         visible=false
         transform=trans(p)
     }
@@ -443,18 +426,18 @@ class portal:gameObject{
     var sideP2:float=1;
     var psideP2:float=1;
     init(_ pt:mat4){
-        super.init(.diffuse,.sphere)
+        super.init(DIFFUSE,SPHERE)
         visible=false
-        let b1=box().setTransform(scale(2,2,1.0/1000)).setMaterial(.portal1)
+        let b1=box().setTransform(scale(2,2,1.0/1000)).setMaterial(PORTAL_1)
         b1.addLeaf(box().setTransform(trans(0,0,-0.1)*scale(1/0.9,1/0.9,1)))
         
         
-        let p2=gameObject(.diffuse,.sphere)
+        let p2=gameObject(DIFFUSE,SPHERE)
         addLeaf(p2)
         addLeaf(b1)
         p2.transform=pt
         p2.visible=false;
-        let b2=box().setTransform(scale(2,2,1.0/1000)).setMaterial(.portal2)
+        let b2=box().setTransform(scale(2,2,1.0/1000)).setMaterial(PORTAL_2)
         b2.addLeaf(box().setTransform(trans(0,0,0.1)*scale(1/0.9,1/0.9,1)))
         p2.addLeaf(b2)
     }
@@ -508,17 +491,17 @@ class portal:gameObject{
 
 class screen:gameObject{
     override init(){
-        super.init(.diffuse,.sphere)
+        super.init(DIFFUSE,SPHERE)
         visible=false
         let bx=box().setTransform(scale(1,1,0.01))
-        bx.material = .screen
+        bx.material = SCREEN
         addLeaf(bx)
     }
 }
 
 class vcam:gameObject{
     override init(){
-        super.init(.diffuse,.sphere)
+        super.init(DIFFUSE,SPHERE)
         visible=false
         let bx=box().setTransform(scale(0.25))
         let cn=cone().setTransform(trans(0,0,-0.125)*rotx(-PI/2)*scale(0.375))

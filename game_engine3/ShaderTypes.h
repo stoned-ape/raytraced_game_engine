@@ -34,6 +34,7 @@ typedef enum:int{
     PORTAL_1=3,
     PORTAL_2=4,
     SCREEN=5,
+    EMISSIVE=6,
 }en_material;
 
 typedef enum:int{
@@ -49,8 +50,8 @@ typedef enum:int{
 typedef struct{
     matrix_float4x4 transform;
     matrix_float4x4 inverse;
-    int material; //en_material
-    int geometry; //en_geometry
+    en_material material; //en_material
+    en_geometry geometry; //en_geometry
     vector_float3 color;
 }sceneObject;
 

@@ -28,7 +28,6 @@ class Renderer:NSObject,MTKViewDelegate{
     var light=vec3(0,1,0)
     var cameraTransform=id()
     var viewTransform=id()
-    //var virtCamTransform=trans(0,0,5)
     
     var keyDown:[char:bool]=[:]
     var zoom:float=0.7
@@ -155,10 +154,10 @@ class Renderer:NSObject,MTKViewDelegate{
 
         let s1=sphere(vec3(0,0,0),1).setTransform(scale(0.125,1,1))
 
-        s1.material = .glass;
+        s1.material = GLASS;
 //        root.addLeaf(s1)
         
-        let bx=box(vec3(4,0,0), vec3(0.5), .diffuse)
+        let bx=box(vec3(4,0,0), vec3(0.5), DIFFUSE)
         
         root.addLeaf(bx)
         
@@ -197,10 +196,34 @@ class Renderer:NSObject,MTKViewDelegate{
         }
         controlls()
         
+        func mat2mat(_ m:Material)->en_material{
+            switch m{
+                case .diffuse  : return DIFFUSE
+                case .specular : return SPECULAR
+                case .glass    : return GLASS
+                case .portal1  : return PORTAL_1
+                case .portal2  : return PORTAL_2
+                case .screen   : return SCREEN
+                case .emmisive : return EMISSIVE
+            }
+        }
+        
+        func geo2geo(_ g:Geometry)->en_geometry{
+            switch g{
+                case .sphere   : return SPHERE
+                case .plane    : return PLANE
+                case .cylinder : return CYLINDER
+                case .cube     : return CUBE
+                case .poll     : return POLE
+                case .cone     : return CONE
+                case .triangle : return TRIANGLE
+            }
+        }
+        
         cursor.transform=cameraTransform*viewTransform *
         trans(0,0,-bind!.zdist.wrappedValue)*scale(bind!.scale.wrappedValue)
-        cursor.geometry=bind!.geo.wrappedValue
-        cursor.material=bind!.mat.wrappedValue
+        cursor.geometry=geo2geo(bind!.geo.wrappedValue)
+        cursor.material=mat2mat(bind!.mat.wrappedValue)
         cursor.visible=bind!.on.wrappedValue
         
         
@@ -216,7 +239,7 @@ class Renderer:NSObject,MTKViewDelegate{
     func controlls(){
         let theta = map(uniforms[0].iMouse.x,0,iRes.x,-PI,PI);
         let phi = map(uniforms[0].iMouse.y,0,iRes.y,-PI/2,PI/2);
-        let speed:float=0.1*20.0/frameRate
+        let speed:float=0.1*48.0/frameRate
         
         print(frameRate," ",_itime())
         
