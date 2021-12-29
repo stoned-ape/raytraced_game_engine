@@ -58,10 +58,11 @@ typedef struct{
     matrix_float4x4 p1Inverse;
     matrix_float4x4 p2Transform;
     matrix_float4x4 p2Inverse;
-    matrix_float4x4 vertCamTransform;
+    matrix_float4x4 virtCamTransform;
+    matrix_float4x4 virtCamInverse;
     float zoom;
     sceneObject objs[40];
-} Uniforms;
+}Uniforms;
 
 
     

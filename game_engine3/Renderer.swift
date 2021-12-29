@@ -28,6 +28,7 @@ class Renderer:NSObject,MTKViewDelegate{
     var light=vec3(0,1,0)
     var cameraTransform=id()
     var viewTransform=id()
+    //var virtCamTransform=trans(0,0,5)
     
     var keyDown:[char:bool]=[:]
     var zoom:float=0.7
@@ -44,6 +45,7 @@ class Renderer:NSObject,MTKViewDelegate{
     var leftMouseDown=false
     
     var portals:portal?
+    var virtCam:vcam?
     var bind:bindings?
     
     override init(){
@@ -154,11 +156,19 @@ class Renderer:NSObject,MTKViewDelegate{
         let s1=sphere(vec3(0,0,0),1).setTransform(scale(0.125,1,1))
 
         s1.material = .glass;
-        root.addLeaf(s1)
+//        root.addLeaf(s1)
         
         let bx=box(vec3(4,0,0), vec3(0.5), .diffuse)
         
         root.addLeaf(bx)
+        
+        let scr=screen().setTransform(trans(0,0,10))
+//        screen.material = .screen
+        root.addLeaf(scr)
+        
+        virtCam=vcam()
+        _=virtCam!.setTransform(trans(0,0,5))
+        root.addLeaf(virtCam!)
         
 
     }
@@ -172,8 +182,10 @@ class Renderer:NSObject,MTKViewDelegate{
         uniforms[0].iMouse=iMouse-bottomLeft
         uniforms[0].iRes=iRes
         uniforms[0].light=normalize(light)
-        
-        
+        if virtCam != nil{
+            uniforms[0].virtCamTransform=virtCam!.transform
+            uniforms[0].virtCamInverse=virtCam!.transform.inverse
+        }
         
         
         

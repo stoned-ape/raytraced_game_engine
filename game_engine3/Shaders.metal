@@ -199,6 +199,7 @@ struct trace{
     float3 color;
     int material;
     float spec;
+    int idx;
     trace(bool _hit,float3 _p,float3 _n,float3 _color,int _material){
         hit=_hit;
         p=_p;
@@ -206,6 +207,7 @@ struct trace{
         color=_color;
         material=_material;
         spec=0;
+        idx=0;
     }
     trace(){
         hit=false;
@@ -214,6 +216,7 @@ struct trace{
         color=float3(0.);
         material=0;
         spec=0;
+        idx=0;
     }
 };
 
@@ -434,13 +437,14 @@ int fac(int n){
 
 
 void setTraceObj(thread isec &I,thread trace &tr,constant sceneObject &s,ray r,
-                 constant Uniforms &uni [[buffer(2)]]){
+                 constant Uniforms &uni [[buffer(2)]],int idx){
     tr.spec=.7*pow(max(dot(r.v,reflect(-uni.light,I.n)),0.),43);
     tr.n=I.n;
     tr.color=s.color*max(dot(-uni.light,tr.n),ambient);
     tr.p=I.p;
     tr.hit=true;
     tr.material=s.material;
+    tr.idx=idx;
 }
 
 trace raytrace(ray r,float3 bg,constant Uniforms &uni [[buffer(2)]]){
@@ -451,7 +455,7 @@ trace raytrace(ray r,float3 bg,constant Uniforms &uni [[buffer(2)]]){
 #define GEO_CASE(ISEC_FUNC) { \
     isec I=ISEC_FUNC(r,s); \
     if(I.hit && I.dist<minD){ \
-        setTraceObj(I,tr,s,r,uni); \
+        setTraceObj(I,tr,s,r,uni,i); \
     } \
     minD=min(minD,I.dist); \
     break; \
@@ -545,7 +549,13 @@ float3 radiate(ray r,float3 bg,constant Uniforms &uni [[buffer(2)]],
             nv=r1.v;
             tr.p=r1.p;
         }else  if(tr.material==SCREEN){
-            
+            float3 p_screen=m4v3(uni.objs[tr.idx].inverse,tr.p,true);
+            float2 uv=p_screen.xy;
+            float3 ray_dir=normalize(float3(uv.x,uv.y,-uni.zoom));
+            ray r1(float3(0),ray_dir);
+            r1=r1.transform(uni.virtCamTransform);
+            nv=normalize(r1.v);
+            tr.p=r1.p+nv*0.75;
         }
         r=ray(tr.p+nv*.01,nv);
         bg=skycolor(r,uni);

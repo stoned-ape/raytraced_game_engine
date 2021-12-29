@@ -144,6 +144,7 @@ enum Material:string,CaseIterable{
     case glass    = "glass"
     case portal1  = "portal1"
     case portal2  = "portal2"
+    case screen   = "screen"
     case emmisive = "emmisive"
 }
 
@@ -507,7 +508,26 @@ class portal:gameObject{
 }
 
 
+class screen:gameObject{
+    override init(){
+        super.init(.diffuse,.sphere)
+        visible=false
+        let bx=box().setTransform(scale(1,1,0.01))
+        bx.material = .screen
+        addLeaf(bx)
+    }
+}
 
+class vcam:gameObject{
+    override init(){
+        super.init(.diffuse,.sphere)
+        visible=false
+        let bx=box().setTransform(scale(0.25))
+        let cn=cone().setTransform(trans(0,0,-0.125)*rotx(-PI/2)*scale(0.375))
+        addLeaf(bx)
+        addLeaf(cn)
+    }
+}
     
 
 
