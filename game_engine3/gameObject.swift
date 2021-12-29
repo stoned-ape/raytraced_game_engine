@@ -200,7 +200,7 @@ class gameObject{
                 break
             }
             i+=1
-        }
+        }        
         i=0
         for geo in Geometry.allCases{
             if geo==geometry{

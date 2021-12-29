@@ -17,12 +17,30 @@
 
 #include <simd/simd.h>
 
+
+typedef enum:int{
+    DIFFUSE=0,
+    SPECULAR=1,
+    GLASS=2,
+    PORTAL_1=3,
+    PORTAL_2=4,
+}en_material;
+
+typedef enum:int{
+    SPHERE=0,
+    PLANE=1,
+    CYLINDER=2,
+    CUBE=3,
+    POLE=4,
+    CONE=5,
+    TRIANGLE=6,
+}en_geometry;
+
 typedef struct{
     matrix_float4x4 transform;
     matrix_float4x4 inverse;
-    int material;
-    // 0=diffuse,1=specular,2=glass,3=portal 1,4=portal 2
-    int geometry;
+    int material; //en_material
+    int geometry; //en_geometry
     // 0=sphere,1=plane,2=cylinder,3=cube,4=poll,5=cone,6=triangle
     vector_float3 color;
 }sceneObject;

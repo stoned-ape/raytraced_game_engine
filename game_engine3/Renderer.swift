@@ -123,22 +123,14 @@ class Renderer:NSObject,MTKViewDelegate{
         
         
         
-        portals=portal(trans(0,0,5)*rotz(0*PI/8)*scale(1,1,1))
-        root.addLeaf(portals!.setTransform(rotx(0)*trans(0,0,1)*roty(-0*PI/2)))
-//
-//
-//        let rb1=box(vec3(0,0,5),vec3(1),.specular)
-//
-//        var tet=tetrahedron()
-//        tet.instanceUpdate={this in this.transform*=rotz(0.01) }
+        //portals=portal(trans(0,0,5)*rotz(0*PI/8)*scale(1,1,1))
+        //root.addLeaf(portals!.setTransform(rotx(0)*trans(0,0,1)*roty(-0*PI/2)))
         
         
-        var oc=octahedron().setMaterial(.glass).setTransform(trans(-1.5,0,3))
+//        var oc=octahedron().setMaterial(.glass).setTransform(trans(-1.5,0,3))
 
-        root.addLeaf(oc)
-        oc.instanceUpdate={this in this.transform*=roty(0.03) }
-//
-//        root.addLeaf(cone([15,0,0],[0,0,1]))
+//        root.addLeaf(oc)
+//        oc.instanceUpdate={this in this.transform*=roty(0.03) }
         
         //gound plane
         var p1=plane(vec3(0,-2,0),vec3(0,1,0))
@@ -146,32 +138,28 @@ class Renderer:NSObject,MTKViewDelegate{
         root.addLeaf(p1)
         
 
-//        root.addLeaf(sphere().setTransform(trans(2,3,0)*scale(1)).setMaterial(.emmisive))
-//
-//
-//        let lens=sphere().setMaterial(.glass).setTransform(trans(2,-1,0)*scale(1,1,1))
-//        lens.instanceUpdate={
-//            $0.transform=trans(0,0.03*sin(self.uniforms[0].iTime/8),0)*$0.transform
-//        }
-//        root.addLeaf(lens)
-//        root.addLeaf(sphere(vec3(-2,1,0),1).setMaterial(.diffuse))
 
         root.addLeaf(axis(trans(3,3,3)))
 
-        let rb=box(vec3(0,0,-10),vec3(1),.specular)
+//        let rb=box(vec3(0,0,-10),vec3(1),.specular)
+//
+//        rb.addLeaf(box(vec3(+3,0,-3),vec3(1,2,1),.diffuse));
+//        rb.addLeaf(box(vec3(-3,0,-3),vec3(1,2,1),.diffuse));
+//        rb.addLeaf(box(vec3(+3,0,+3),vec3(1,2,1),.diffuse));
+//        rb.addLeaf(box(vec3(-3,0,+3),vec3(1,2,1),.diffuse));
+//
+//        rb.addLeaf(box(vec3(0,3,0),vec3(4,1,4),.diffuse));
+//        root.addLeaf(rb)
 
-        rb.addLeaf(box(vec3(+3,0,-3),vec3(1,2,1),.diffuse));
-        rb.addLeaf(box(vec3(-3,0,-3),vec3(1,2,1),.diffuse));
-        rb.addLeaf(box(vec3(+3,0,+3),vec3(1,2,1),.diffuse));
-        rb.addLeaf(box(vec3(-3,0,+3),vec3(1,2,1),.diffuse));
+        let s1=sphere(vec3(0,0,0),1).setTransform(scale(0.125,1,1))
 
-        rb.addLeaf(box(vec3(0,3,0),vec3(4,1,4),.diffuse));
-        root.addLeaf(rb)
-
-        let s1=sphere(vec3(2.5,0,5),1)
-
-        s1.material = .specular;
-        //root.addLeaf(s1)
+        s1.material = .glass;
+        root.addLeaf(s1)
+        
+        let bx=box(vec3(4,0,0), vec3(0.5), .diffuse)
+        
+        root.addLeaf(bx)
+        
 
     }
     func update(){
@@ -197,16 +185,6 @@ class Renderer:NSObject,MTKViewDelegate{
             uniforms[0].p1Inverse=p.transform
             uniforms[0].p2Transform=p.leafs[0].transform.inverse
             uniforms[0].p2Inverse=p.leafs[0].transform
-//            if p.checkP1(cameraTransform) {
-//                p.togglebounds(portal: 1, hidden: true)
-//            }else{
-//                p.togglebounds(portal: 1, hidden: false)
-//            }
-//            if p.checkP2(cameraTransform) {
-//                p.togglebounds(portal: 0, hidden: true)
-//            }else{
-//                p.togglebounds(portal: 0, hidden: false)
-//            }
             cameraTransform=p.teleport(cameraTransform)
         }
         controlls()

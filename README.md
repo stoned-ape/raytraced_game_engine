@@ -2,6 +2,9 @@
 
 This is a real-time ray-tracing game engine for MacOS.
 
+YouTube Video: https://www.youtube.com/watch?v=6tEt2SM2F54
+
+
 ## features
 
 * Reflection and Total Internal Reflection

@@ -7,7 +7,6 @@
 
 
 #include <metal_stdlib>
-#include <simd/simd.h>
 #import "ShaderTypes.h"
 
 using namespace metal;
@@ -449,65 +448,24 @@ trace raytrace(ray r,float3 bg,constant Uniforms &uni [[buffer(2)]]){
     float minD=1e10;
     for(int i=0;i<uni.objNum;i++){
         sceneObject s=uni.objs[i];
+#define GEO_CASE(ISEC_FUNC) { \
+    isec I=ISEC_FUNC(r,s); \
+    if(I.hit && I.dist<minD){ \
+        setTraceObj(I,tr,s,r,uni); \
+    } \
+    minD=min(minD,I.dist); \
+    break; \
+}
         switch(s.geometry){
-            case 0:{
-                isec I=sphereIntersect(r,s);
-                if(I.hit && I.dist<minD){
-                    setTraceObj(I,tr,s,r,uni);
-                }
-                minD=min(minD,I.dist);
-                break;
-            }
-            case 1:{
-                isec I=planeIntersect(r,s);
-                if(I.hit && I.dist<minD){
-                    setTraceObj(I,tr,s,r,uni);
-                }
-                minD=min(minD,I.dist);
-                break;
-            }
-            case 2:{
-                isec I=cylinderIntersect(r,s);
-                if(I.hit && I.dist<minD){
-                    setTraceObj(I,tr,s,r,uni);
-                }
-                minD=min(minD,I.dist);
-                break;
-            }
-            case 3:{
-                isec I=cubeIntersect(r,s);
-                if(I.hit && I.dist<minD){
-                    setTraceObj(I,tr,s,r,uni);
-                }
-                minD=min(minD,I.dist);
-                break;
-            }
-            case 4:{
-                isec I=pollIntersect(r,s);
-                if(I.hit && I.dist<minD){
-                    setTraceObj(I,tr,s,r,uni);
-                }
-                minD=min(minD,I.dist);
-                break;
-            }
-            case 5:{
-                isec I=coneIntersect(r,s);
-                if(I.hit && I.dist<minD){
-                    setTraceObj(I,tr,s,r,uni);
-                }
-                minD=min(minD,I.dist);
-                break;
-            }
-            case 6:{
-                isec I=triangleIntersect(r,s);
-                if(I.hit && I.dist<minD){
-                    setTraceObj(I,tr,s,r,uni);
-                }
-                minD=min(minD,I.dist);
-                break;
-            }
-                
+            case SPHERE:   GEO_CASE(sphereIntersect);
+            case PLANE:    GEO_CASE(planeIntersect);
+            case CYLINDER: GEO_CASE(cylinderIntersect);
+            case CUBE:     GEO_CASE(cubeIntersect);
+            case POLE:     GEO_CASE(pollIntersect);
+            case CONE:     GEO_CASE(coneIntersect);
+            case TRIANGLE: GEO_CASE(triangleIntersect);
         }
+#undef GEO_CASE
     }
     return tr;
 }
@@ -564,11 +522,11 @@ float3 radiate(ray r,float3 bg,constant Uniforms &uni [[buffer(2)]],
     float a=-1;
     for(int i=0;i<20;i++){
         tr=raytrace(r,bg,uni);
-        if(tr.material==0 || !tr.hit) break;
+        if(tr.material==DIFFUSE || !tr.hit) break;
         float3 nv(0);
         float3 reflected=reflect(r.v,tr.n);
-        if(tr.material==1) nv=reflected;
-        else if(tr.material==2){
+        if(tr.material==SPECULAR) nv=reflected;
+        else if(tr.material==GLASS){
             nv=refract(r.v,-a*tr.n,pow(etaRC[rgb],a));
             if(length(nv)==0 || rand(r,uni)>1){
                 nv=reflected;
@@ -576,12 +534,12 @@ float3 radiate(ray r,float3 bg,constant Uniforms &uni [[buffer(2)]],
                 a*=-1;
                 rfr=true;
             }
-        }else  if(tr.material==3){
+        }else  if(tr.material==PORTAL_1){
             ray r1(tr.p+.1*r.v,r.v);
             r1=r1.transform(uni.p1Inverse*uni.p2Inverse*uni.p1Transform);
             nv=r1.v;
             tr.p=r1.p;
-        }else  if(tr.material==4){
+        }else  if(tr.material==PORTAL_2){
             ray r1(tr.p+.1*r.v,r.v);
             r1=r1.transform(uni.p1Inverse*uni.p2Transform*uni.p1Transform);
             nv=r1.v;
