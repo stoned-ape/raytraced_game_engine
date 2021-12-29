@@ -406,7 +406,7 @@ isec coneIntersect(ray r,sceneObject s){
     return I;
 }
 
-isec triangleIntersect(ray r,sceneObject s){
+isec triangleIntersect(ray r,constant sceneObject &s){
     isec I;
     r=r.transform(s.inverse);
     
@@ -433,7 +433,7 @@ int fac(int n){
 }
 
 
-void setTraceObj(thread isec &I,thread trace &tr,thread sceneObject &s,ray r,
+void setTraceObj(thread isec &I,thread trace &tr,constant sceneObject &s,ray r,
                  constant Uniforms &uni [[buffer(2)]]){
     tr.spec=.7*pow(max(dot(r.v,reflect(-uni.light,I.n)),0.),43);
     tr.n=I.n;
@@ -447,7 +447,7 @@ trace raytrace(ray r,float3 bg,constant Uniforms &uni [[buffer(2)]]){
     trace tr=trace(false,float3(0.),float3(0.),bg,0);
     float minD=1e10;
     for(int i=0;i<uni.objNum;i++){
-        sceneObject s=uni.objs[i];
+        constant sceneObject &s=uni.objs[i];
 #define GEO_CASE(ISEC_FUNC) { \
     isec I=ISEC_FUNC(r,s); \
     if(I.hit && I.dist<minD){ \
