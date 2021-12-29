@@ -15,7 +15,7 @@ using namespace metal;
 constant float PI=3.14159265;
 constant float ambient=.4;
 constant float etaR=1.5;
-constant float3 etaRC(1.5,1.55,1.6);//{1.50917,1.52534,1.51609};
+constant float3 etaRC(1.5,1.55,1.6);//real world values: {1.50917,1.52534,1.51609};
 
 
 float map(float t,float a,float b,float c,float d){
@@ -220,7 +220,7 @@ struct trace{
     
 
 
-isec sphereIntersect(ray r,sceneObject s){
+isec sphereIntersect(ray r,constant sceneObject &s){
     isec I;
     r=r.transform(s.inverse);
 
@@ -243,7 +243,7 @@ isec sphereIntersect(ray r,sceneObject s){
     I.n=normalize(m4v3(s.transform,I.n,false));
     return I;
 }
-isec planeIntersect(ray r,sceneObject s){
+isec planeIntersect(ray r,constant sceneObject &s){
     isec I;
     r=r.transform(s.inverse);
     
@@ -258,7 +258,7 @@ isec planeIntersect(ray r,sceneObject s){
     I.n=normalize(m4v3(s.transform,I.n,false));
     return I;
 }
-isec cylinderIntersect(ray r,sceneObject s){
+isec cylinderIntersect(ray r,constant sceneObject &s){
     isec I;
     r=r.transform(s.inverse);
     
@@ -284,7 +284,7 @@ isec cylinderIntersect(ray r,sceneObject s){
     return I;
 }
 
-isec cubeIntersect(ray r,sceneObject s){
+isec cubeIntersect(ray r,constant sceneObject &s){
     isec I;
     r=r.transform(s.inverse);
     
@@ -316,7 +316,7 @@ isec cubeIntersect(ray r,sceneObject s){
     I.n=normalize(m4v3(s.transform,I.n,false));
     return I;
 }
-isec pollIntersect(ray r,sceneObject s){
+isec pollIntersect(ray r,constant sceneObject &s){
     isec I;
     r=r.transform(s.inverse);
     
@@ -371,7 +371,7 @@ isec pollIntersect(ray r,sceneObject s){
     return I;
 }
 
-isec coneIntersect(ray r,sceneObject s){
+isec coneIntersect(ray r,constant sceneObject &s){
     isec I;
     r=r.transform(s.inverse);
 
@@ -544,6 +544,8 @@ float3 radiate(ray r,float3 bg,constant Uniforms &uni [[buffer(2)]],
             r1=r1.transform(uni.p1Inverse*uni.p2Transform*uni.p1Transform);
             nv=r1.v;
             tr.p=r1.p;
+        }else  if(tr.material==SCREEN){
+            
         }
         r=ray(tr.p+nv*.01,nv);
         bg=skycolor(r,uni);

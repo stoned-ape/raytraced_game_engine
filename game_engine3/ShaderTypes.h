@@ -24,6 +24,7 @@ typedef enum:int{
     GLASS=2,
     PORTAL_1=3,
     PORTAL_2=4,
+    SCREEN=5,
 }en_material;
 
 typedef enum:int{
@@ -41,7 +42,6 @@ typedef struct{
     matrix_float4x4 inverse;
     int material; //en_material
     int geometry; //en_geometry
-    // 0=sphere,1=plane,2=cylinder,3=cube,4=poll,5=cone,6=triangle
     vector_float3 color;
 }sceneObject;
 
@@ -58,6 +58,7 @@ typedef struct{
     matrix_float4x4 p1Inverse;
     matrix_float4x4 p2Transform;
     matrix_float4x4 p2Inverse;
+    matrix_float4x4 vertCamTransform;
     float zoom;
     sceneObject objs[40];
 } Uniforms;
