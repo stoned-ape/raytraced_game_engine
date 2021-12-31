@@ -33,7 +33,6 @@
 		2E457558277F5C7200778E29 /* game_engine3_ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = game_engine3_ios.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2E457560277F5CCC00778E29 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2E457563277F5CCC00778E29 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		2E457566277F5CCD00778E29 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2E457568277F5CCD00778E29 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2E457577277F644600778E29 /* game_engine3_ios-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "game_engine3_ios-Bridging-Header.h"; sourceTree = "<group>"; };
 		2EDC51AA261D4EBF0015C403 /* game_engine3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = game_engine3.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -73,7 +72,6 @@
 			isa = PBXGroup;
 			children = (
 				2E457560277F5CCC00778E29 /* Assets.xcassets */,
-				2E457565277F5CCD00778E29 /* LaunchScreen.storyboard */,
 				2E457568277F5CCD00778E29 /* Info.plist */,
 				2E457562277F5CCC00778E29 /* Preview Content */,
 				2E457577277F644600778E29 /* game_engine3_ios-Bridging-Header.h */,
@@ -264,14 +262,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		2E457565277F5CCD00778E29 /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				2E457566277F5CCD00778E29 /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
 		2EDC51B6261D4EE80015C403 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (

@@ -268,10 +268,14 @@ class Renderer:NSObject,MTKViewDelegate{
         }
     }
     func controlls(){
+#if os(OSX)
         let theta = map(uniforms[0].iMouse.x,0,iRes.x,-PI,PI);
         let phi = map(uniforms[0].iMouse.y,0,iRes.y,-PI/2,PI/2);
+#elseif os(iOS)
+        let theta:float = 0
+        let phi:float = 0
+#endif
         let speed:float=0.1*48.0/frameRate
-        
         print(frameRate," ",_itime())
         
         //cameraTransform=trans(cameraTransform.position())
