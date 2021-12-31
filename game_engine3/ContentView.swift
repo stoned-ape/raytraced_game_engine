@@ -53,7 +53,6 @@ struct ContentView:View{
             HStack{
                 Spacer()
                 VStack{
-                    Button("toggle cursor"){on = !on}
                     Slider(value: $zdist, in: 1...10){Text("z-dist")}
                     Slider(value: $scale, in: 0...2){Text("scale")}
                 }

@@ -20,6 +20,7 @@ class Renderer:NSObject,MTKViewDelegate{
     var uniformBufferOffset=0
     var uniformBufferIndex=0
     var uniforms:UnsafeMutablePointer<Uniforms>
+    var prev_frame:MTLTexture
     
     var iMouse=vec2(400,300)
     var iRes=vec2(556,411)
@@ -59,6 +60,10 @@ class Renderer:NSObject,MTKViewDelegate{
         self.dynamicUniformBuffer.label = "UniformBuffer"
         uniforms = UnsafeMutableRawPointer(
             dynamicUniformBuffer.contents()).bindMemory(to:Uniforms.self, capacity:1)
+        let textureloader=MTKTextureLoader(device: self.device)
+        let url=Bundle.main.url(forResource: "black", withExtension: "png")!
+        prev_frame=try! textureloader.newTexture(URL: url, options: [:])
+        
         super.init()
         start()
     }
@@ -79,6 +84,7 @@ class Renderer:NSObject,MTKViewDelegate{
         commandEncoder.setComputePipelineState(pipelineState)
         commandEncoder.setBuffer(dynamicUniformBuffer, offset:uniformBufferOffset, index: 2)
         commandEncoder.setTexture(drawable.texture, index: 0)
+        commandEncoder.setTexture(prev_frame, index: 1)
         var w = pipelineState.threadExecutionWidth
         var h = pipelineState.maxTotalThreadsPerThreadgroup / w
         //print("w: \(w) h: \(h)")
@@ -94,6 +100,7 @@ class Renderer:NSObject,MTKViewDelegate{
         commandEncoder.endEncoding()
         commandBuffer.present(drawable)
         commandBuffer.commit()
+        prev_frame=drawable.texture
     }
     func updateDynamicBufferState() {
         uniformBufferIndex = (uniformBufferIndex + 1) % maxBuffersInFlight
@@ -115,6 +122,7 @@ class Renderer:NSObject,MTKViewDelegate{
         cameraTransform=trans(camP)
         root.visible=false
         container.visible=false
+        cursor.visible=false
         
         root.addLeaf(cursor)
         root.addLeaf(container)
@@ -136,6 +144,7 @@ class Renderer:NSObject,MTKViewDelegate{
         //gound plane
         var p1=plane(vec3(0,-2,0),vec3(0,1,0))
         p1.color=vec3(0,1,0)
+//        p1.material=EMISSIVE
         root.addLeaf(p1)
         
 
@@ -168,6 +177,11 @@ class Renderer:NSObject,MTKViewDelegate{
         virtCam=vcam()
         _=virtCam!.setTransform(trans(0,0,5))
         root.addLeaf(virtCam!)
+        
+        
+        var lb=box()
+        lb.material=EMISSIVE
+        root.addLeaf(lb)
         
 
     }
@@ -224,7 +238,6 @@ class Renderer:NSObject,MTKViewDelegate{
         trans(0,0,-bind!.zdist.wrappedValue)*scale(bind!.scale.wrappedValue)
         cursor.geometry=geo2geo(bind!.geo.wrappedValue)
         cursor.material=mat2mat(bind!.mat.wrappedValue)
-        cursor.visible=bind!.on.wrappedValue
         
         
         var idx:int=0
@@ -235,7 +248,11 @@ class Renderer:NSObject,MTKViewDelegate{
     }
     func onLeftClick(){}
     func onRightClick(){}
-    func onKeyPress(_ c:char){}
+    func onKeyPress(_ c:char){
+        if c=="t"{
+            cursor.visible = !cursor.visible
+        }
+    }
     func controlls(){
         let theta = map(uniforms[0].iMouse.x,0,iRes.x,-PI,PI);
         let phi = map(uniforms[0].iMouse.y,0,iRes.y,-PI/2,PI/2);

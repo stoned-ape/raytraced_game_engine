@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2E45754E277ED82F00778E29 /* black.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E45754D277ED82C00778E29 /* black.png */; };
 		2EDC51AE261D4EBF0015C403 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EDC51AD261D4EBF0015C403 /* AppDelegate.swift */; };
 		2EDC51B0261D4EBF0015C403 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EDC51AF261D4EBF0015C403 /* ContentView.swift */; };
 		2EDC51B2261D4EE80015C403 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2EDC51B1261D4EE80015C403 /* Assets.xcassets */; };
@@ -18,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2E45754D277ED82C00778E29 /* black.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = black.png; sourceTree = "<group>"; };
 		2EDC51AA261D4EBF0015C403 /* game_engine3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = game_engine3.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2EDC51AD261D4EBF0015C403 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2EDC51AF261D4EBF0015C403 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -69,6 +71,7 @@
 				2EDC51C7261D52D00015C403 /* Shaders.metal */,
 				2EDC51C8261D52D00015C403 /* ShaderTypes.h */,
 				2EDC51C1261D52B30015C403 /* Renderer.swift */,
+				2E45754D277ED82C00778E29 /* black.png */,
 				2EDC51B1261D4EE80015C403 /* Assets.xcassets */,
 				2EDC51B6261D4EE80015C403 /* Main.storyboard */,
 				2EDC51B9261D4EE80015C403 /* Info.plist */,
@@ -146,6 +149,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2EDC51B8261D4EE80015C403 /* Main.storyboard in Resources */,
+				2E45754E277ED82F00778E29 /* black.png in Resources */,
 				2EDC51B5261D4EE80015C403 /* Preview Assets.xcassets in Resources */,
 				2EDC51B2261D4EE80015C403 /* Assets.xcassets in Resources */,
 			);

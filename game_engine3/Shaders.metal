@@ -8,12 +8,17 @@
 
 #include <metal_stdlib>
 #import "ShaderTypes.h"
+//#define PATH_TRACE
 
 using namespace metal;
 
 
 constant float PI=3.14159265;
+#ifndef PATH_TRACE
 constant float ambient=.4;
+#else
+constant float ambient=0;
+#endif
 constant float3 etaRC(1.5,1.55,1.6);//real world values: {1.50917,1.52534,1.51609};
 
 
@@ -527,33 +532,40 @@ float3 radiate(ray r,float3 bg,constant Uniforms &uni [[buffer(2)]],
         if(tr.material==DIFFUSE || !tr.hit) break;
         float3 nv(0);
         float3 reflected=reflect(r.v,tr.n);
-        if(tr.material==SPECULAR) nv=reflected;
-        else if(tr.material==GLASS){
-            nv=refract(r.v,-a*tr.n,pow(etaRC[rgb],a));
-            if(length(nv)==0 || rand(r,uni)>1){
-                nv=reflected;
-            }else{
-                a*=-1;
-                rfr=true;
-            }
-        }else  if(tr.material==PORTAL_1){
-            ray r1(tr.p+.1*r.v,r.v);
-            r1=r1.transform(uni.p1Inverse*uni.p2Inverse*uni.p1Transform);
-            nv=r1.v;
-            tr.p=r1.p;
-        }else  if(tr.material==PORTAL_2){
-            ray r1(tr.p+.1*r.v,r.v);
-            r1=r1.transform(uni.p1Inverse*uni.p2Transform*uni.p1Transform);
-            nv=r1.v;
-            tr.p=r1.p;
-        }else  if(tr.material==SCREEN){
-            float3 p_screen=m4v3(uni.objs[tr.idx].inverse,tr.p,true);
-            float2 uv=p_screen.xy;
-            float3 ray_dir=normalize(float3(uv.x,uv.y,-uni.zoom));
-            ray r1(float3(0),ray_dir);
-            r1=r1.transform(uni.virtCamTransform);
-            nv=normalize(r1.v);
-            tr.p=r1.p+nv*0.75;
+        
+        switch(tr.material){
+            case SPECULAR: nv=reflected; break;
+            case GLASS:{
+                nv=refract(r.v,-a*tr.n,pow(etaRC[rgb],a));
+                if(length(nv)==0 || rand(r,uni)>1){
+                    nv=reflected;
+                }else{
+                    a*=-1;
+                    rfr=true;
+                }
+            }break;
+            case PORTAL_1:{
+                ray r1(tr.p+.1*r.v,r.v);
+                r1=r1.transform(uni.p1Inverse*uni.p2Inverse*uni.p1Transform);
+                nv=r1.v;
+                tr.p=r1.p;
+            }break;
+            case PORTAL_2:{
+                ray r1(tr.p+.1*r.v,r.v);
+                r1=r1.transform(uni.p1Inverse*uni.p2Transform*uni.p1Transform);
+                nv=r1.v;
+                tr.p=r1.p;
+            }break;
+            case SCREEN:{
+                float3 p_screen=m4v3(uni.objs[tr.idx].inverse,tr.p,true);
+                float2 uv=p_screen.xy;
+                float3 ray_dir=normalize(float3(uv.x,uv.y,-uni.zoom));
+                ray r1(float3(0),ray_dir);
+                r1=r1.transform(uni.virtCamTransform);
+                nv=normalize(r1.v);
+                tr.p=r1.p+nv*0.75;
+            }break;
+                
         }
         r=ray(tr.p+nv*.01,nv);
         bg=skycolor(r,uni);
@@ -582,18 +594,24 @@ float3 pathtrace(ray R,int samples,float3 bg,
         for(int i=0;i<6;i++){
             tr=raytrace(r,bg,uni);
             if(!tr.hit){
+                if(abs(dot(r.v,uni.light))>.95){
+                    col+=diffcol;
+                    if(!hit) col+=100;
+                }
                 break;
             }
-            if(tr.material==5){
+            if(tr.material==EMISSIVE){
                 col+=diffcol;
                 hits++;
                 if(!hit) col+=100;
                 break;
             }
-            if(tr.material==0){
-                float3 nv=normalize(float3(rand(r.transform(roty4(j)),uni),
-                                           2*rand(r.transform(rotx4(j)),uni)-1,
-                                           2*rand(r.transform(rotx4(-j)),uni)-1));
+            if(tr.material==DIFFUSE){
+                float xr=  rand(r.transform(roty4((uni.iTime+j)/100)),uni);
+                float yr=2*rand(r.transform(rotx4((uni.iTime+j)/100)*roty4(xr)),uni)-1;
+                float zr=2*rand(r.transform(rotz4((uni.iTime-j)/100)*rotx4(yr)),uni)-1;
+                
+                float3 nv=normalize(float3(xr,yr,zr));
                 nv=rotate(nv,fromTo(float3(1,0,0),tr.n));
                 r=ray(tr.p+nv*.01,nv);
                 diffcol=project(diffcol,normalize(tr.color));
@@ -603,30 +621,38 @@ float3 pathtrace(ray R,int samples,float3 bg,
             }
             float3 nv(0);
             float3 reflected=reflect(r.v,tr.n);
-            if(tr.material==1) nv=reflected;
-            else if(tr.material==2){
+            if(tr.material==SPECULAR) nv=reflected;
+            else if(tr.material==GLASS){
                 nv=refract(r.v,-a*tr.n,pow(etaRC[0],a));
                 if(length(nv)==0 || rand(r,uni)>1){
                     nv=reflected;
                 }else{
                     a*=-1;
                 }
-            }else  if(tr.material==3){
+            }else  if(tr.material==PORTAL_1){
                 ray r1(tr.p+.1*r.v,r.v);
                 r1=r1.transform(uni.p1Inverse*uni.p2Inverse*uni.p1Transform);
                 nv=r1.v;
                 tr.p=r1.p;
-            }else  if(tr.material==4){
+            }else  if(tr.material==PORTAL_2){
                 ray r1(tr.p+.1*r.v,r.v);
                 r1=r1.transform(uni.p1Inverse*uni.p2Transform*uni.p1Transform);
                 nv=r1.v;
                 tr.p=r1.p;
+            }else  if(tr.material==SCREEN){
+                float3 p_screen=m4v3(uni.objs[tr.idx].inverse,tr.p,true);
+                float2 uv=p_screen.xy;
+                float3 ray_dir=normalize(float3(uv.x,uv.y,-uni.zoom));
+                ray r1(float3(0),ray_dir);
+                r1=r1.transform(uni.virtCamTransform);
+                nv=normalize(r1.v);
+                tr.p=r1.p+nv*0.75;
             }
             r=ray(tr.p+nv*.01,nv);
         }
         
     }
-    return 1-exp(-5*col/(samples));
+    return clamp(1-exp(-5*col/(samples)),0,1);
 
 }
 
@@ -635,14 +661,21 @@ float3 pathtrace(ray R,int samples,float3 bg,
 
 kernel void compute(uint2 id [[thread_position_in_grid]],
                     texture2d<float, access::write> output [[texture(0)]],
-                    constant Uniforms &uni [[buffer(2)]]){
+                    constant Uniforms &uni [[buffer(2)]],
+                    texture2d<float, access::sample> prev_frame [[texture(1)]]){
    
+    constexpr sampler colsamp(mip_filter::linear,
+                              mag_filter::linear,
+                              min_filter::linear);
+
     
     float2 uv=float2(id)/uni.iRes;
     float aspect=uni.iRes.x/uni.iRes.y;
     uv-=.5;
     uv.x*=aspect;
     uv.y*=-1;
+    
+    float4 prev_col=prev_frame.sample(colsamp,float2(id)/float2(uni.iRes));
     
     float3 v=normalize(float3(uv.x,uv.y,-uni.zoom));
 //    v=m4v3(uni.viewTransform,v,false);//look(v,uni);
@@ -655,25 +688,28 @@ kernel void compute(uint2 id [[thread_position_in_grid]],
     float3 sky=skycolor(r,uni);
     
     float3 col(1);
-    
+    bool rfr=false;
     
 
-    bool rfr=false;
+#ifndef PATH_TRACE
+    
     float3 red=radiate(r,sky,uni,rfr,0);
     if(rfr){
         float3 grn=radiate(r,sky,uni,rfr,1);
         float3 blu=radiate(r,sky,uni,rfr,2);
         col=float3(red.x,grn.y,blu.z);
     }else col=red;
-    
-    //col=pathtrace(r,100,sky,uni);
-
     col+=float3(step(length(uv),.005));
+    
+    output.write(float4(col,1.0),id);
+#else
+    col=pathtrace(r,1,sky,uni)+.1*radiate(r,sky,uni,rfr,0);
+    output.write(float4(col,1.0)+.91*prev_col,id);
+
 //    float3 noise=float3(rand(r,uni));
 //    col=noise;
-
+#endif
      
-    output.write(float4(col,1.0),id);
 }
 
 
