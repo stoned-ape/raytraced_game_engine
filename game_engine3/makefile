@@ -28,3 +28,7 @@ clean:
 run: all
 	$(PATH)/MacOS/game_engine3
 
+#same as command+B except the output is in ../build
+xc:
+	zsh -c 'cd .. && /usr/bin/xcodebuild ;'
+	

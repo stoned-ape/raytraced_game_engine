@@ -1,0 +1,8 @@
+version: "Apple Swift version 5.3.2 (swiftlang-1200.0.45 clang-1200.0.32.28)"
+options: "12325339004111305cad76edc485fcd0"
+build_time: [1640952488, 595043000]
+inputs:
+  "/Users/apple1/Library/Autosave Information/game_engine3/game_engine3/ContentView.swift": [9223372036, 854775807]
+  "/Users/apple1/Library/Autosave Information/game_engine3/game_engine3/Renderer.swift": [9223372036, 854775807]
+  "/Users/apple1/Library/Autosave Information/game_engine3/game_engine3/AppDelegate.swift": [9223372036, 854775807]
+  "/Users/apple1/Library/Autosave Information/game_engine3/game_engine3/gameObject.swift": [9223372036, 854775807]
