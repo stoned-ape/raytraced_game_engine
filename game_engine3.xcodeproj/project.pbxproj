@@ -32,7 +32,6 @@
 		2E45754D277ED82C00778E29 /* black.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = black.png; sourceTree = "<group>"; };
 		2E457550277F029A00778E29 /* makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = makefile; sourceTree = "<group>"; };
 		2E457558277F5C7200778E29 /* game_engine3_ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = game_engine3_ios.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		2E45755C277F5C7300778E29 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		2E457560277F5CCC00778E29 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2E457563277F5CCC00778E29 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		2E457566277F5CCD00778E29 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -74,7 +73,6 @@
 		2E457559277F5C7300778E29 /* game_engine3_ios */ = {
 			isa = PBXGroup;
 			children = (
-				2E45755C277F5C7300778E29 /* SceneDelegate.swift */,
 				2E457560277F5CCC00778E29 /* Assets.xcassets */,
 				2E457565277F5CCD00778E29 /* LaunchScreen.storyboard */,
 				2E457568277F5CCD00778E29 /* Info.plist */,
