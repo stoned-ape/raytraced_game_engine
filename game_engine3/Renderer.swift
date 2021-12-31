@@ -10,6 +10,12 @@ import simd
 #if canImport(shader_types)
 import shader_types
 #endif
+#if os(iOS)
+import CoreMotion
+#endif
+
+
+
 
 let alignedUniformsSize=(MemoryLayout<Uniforms>.size + 0xFF) & -0x100
 let maxBuffersInFlight=3
@@ -51,7 +57,21 @@ class Renderer:NSObject,MTKViewDelegate{
     var virtCam:vcam?
     var bind:bindings?
     
+    #if os(iOS)
+    let motion_manager=CMMotionManager()
+    #endif
+    
     override init(){
+        #if os(iOS)
+        motion_manager.startDeviceMotionUpdates()
+        if !motion_manager.isDeviceMotionAvailable{
+            print("error")
+        }
+        while !motion_manager.isDeviceMotionActive{}
+        while nil==motion_manager.deviceMotion{
+            print("nil")
+        }
+        #endif
         self.device = MTLCreateSystemDefaultDevice()!
         self.commandQueue = self.device.makeCommandQueue()!
         let library=device.makeDefaultLibrary()!
@@ -268,19 +288,25 @@ class Renderer:NSObject,MTKViewDelegate{
         }
     }
     func controlls(){
-#if os(OSX)
         let theta = map(uniforms[0].iMouse.x,0,iRes.x,-PI,PI);
         let phi = map(uniforms[0].iMouse.y,0,iRes.y,-PI/2,PI/2);
-#elseif os(iOS)
-        let theta:float = 0
-        let phi:float = 0
-#endif
         let speed:float=0.1*48.0/frameRate
         print(frameRate," ",_itime())
         
-        //cameraTransform=trans(cameraTransform.position())
-        viewTransform=roty(-theta)*rotx(phi);
         
+        #if os(OSX)
+        viewTransform=roty(-theta)*rotx(phi);
+        #elseif os(iOS)
+        let motion=motion_manager.deviceMotion!
+        let cmmat=motion.attitude.rotationMatrix
+        let cmmat4=mat4(
+            vec4(float(cmmat.m11),float(cmmat.m12),float(cmmat.m13),0),
+            vec4(float(cmmat.m21),float(cmmat.m22),float(cmmat.m23),0),
+            vec4(float(cmmat.m31),float(cmmat.m32),float(cmmat.m33),0),
+            vec4(0,0,0,1)
+        )
+        viewTransform=cmmat4
+        #endif
         if(keyDown[char("a")]!){
             let d = +speed*vec3(-cos(theta),0,-sin(theta))
             cameraTransform=trans(m4v3(cameraTransform,d,false))*cameraTransform

@@ -17,6 +17,7 @@
 		2E457583277F6A4800778E29 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EDC51AD261D4EBF0015C403 /* AppDelegate.swift */; };
 		2E457588277F6B0A00778E29 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EDC51AF261D4EBF0015C403 /* ContentView.swift */; };
 		2E45758B277F6E2100778E29 /* black.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E45754D277ED82C00778E29 /* black.png */; };
+		2E4575A7277F8F3000778E29 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E4575A6277F8F2E00778E29 /* CoreMotion.framework */; };
 		2EDC51AE261D4EBF0015C403 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EDC51AD261D4EBF0015C403 /* AppDelegate.swift */; };
 		2EDC51B0261D4EBF0015C403 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EDC51AF261D4EBF0015C403 /* ContentView.swift */; };
 		2EDC51B2261D4EE80015C403 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2EDC51B1261D4EE80015C403 /* Assets.xcassets */; };
@@ -35,6 +36,7 @@
 		2E457563277F5CCC00778E29 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		2E457568277F5CCD00778E29 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2E457577277F644600778E29 /* game_engine3_ios-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "game_engine3_ios-Bridging-Header.h"; sourceTree = "<group>"; };
+		2E4575A6277F8F2E00778E29 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.4.sdk/System/Library/Frameworks/CoreMotion.framework; sourceTree = DEVELOPER_DIR; };
 		2EDC51AA261D4EBF0015C403 /* game_engine3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = game_engine3.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2EDC51AD261D4EBF0015C403 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2EDC51AF261D4EBF0015C403 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -55,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2E4575A7277F8F3000778E29 /* CoreMotion.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -87,12 +90,21 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		2E4575A5277F8F2D00778E29 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2E4575A6277F8F2E00778E29 /* CoreMotion.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		2EDC51A1261D4EBF0015C403 = {
 			isa = PBXGroup;
 			children = (
 				2EDC51AC261D4EBF0015C403 /* game_engine3 */,
 				2E457559277F5C7300778E29 /* game_engine3_ios */,
 				2EDC51AB261D4EBF0015C403 /* Products */,
+				2E4575A5277F8F2D00778E29 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
