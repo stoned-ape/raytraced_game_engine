@@ -48,6 +48,7 @@ struct ContentView:View{
     var body:some View{
         VStack{
             gameview(bind:bindings(geo:$geo,mat:$mat,on:$on,zdist:$zdist,scale:$scale))
+#if os(OSX)
             HStack{
                 Spacer()
                 VStack{
@@ -68,11 +69,12 @@ struct ContentView:View{
                 }
                 Spacer()
             }
+#endif
         }
     }
 }
 
-
+#if os(OSX)
 struct gameview:NSViewRepresentable{
     let mtkview=MTKView()
     var del=Renderer()
@@ -127,5 +129,29 @@ struct gameview:NSViewRepresentable{
     }
 }
 
+#elseif os(iOS)
+
+struct gameview:UIViewRepresentable{
+    let mtkview=MTKView()
+    var del=Renderer()
+    //var mouseLocation: UIPoint { NSEvent.mouseLocation }
+    var bind:bindings
+    func makeUIView(context: Context)->some UIView{
+        mtkview.delegate=del
+        mtkview.device=del.device
+        mtkview.framebufferOnly=false
+        set_handlers()
+        del.bind=bind
+        return mtkview
+    }
+    func updateUIView(_ uiView: UIViewType, context: Context){}
+    
+    func set_handlers(){
+        
+    }
+}
+
+
+#endif
 
 

@@ -32,3 +32,7 @@ run: all
 xc:
 	zsh -c 'cd .. && /usr/bin/xcodebuild ;'
 	
+#runs the app created with "make xc"
+xrun: xc
+	../build/Release/game_engine3.app/Contents/MacOS/game_engine3
+	

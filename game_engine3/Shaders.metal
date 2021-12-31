@@ -136,10 +136,7 @@ float3 m4v3(float4x4 m,float3 v,bool translate){
 struct quat{
     float s;
     float3 v;
-    quat(float _s,float3 _v){
-        s=_s;
-        v=_v;
-    }
+    quat(float _s,float3 _v):s(_s),v(_v){}
     quat operator*(quat q){
         return quat(s*q.s-dot(v,q.v),s*q.v+q.s*v+cross(v,q.v));
     }
@@ -204,15 +201,6 @@ struct trace{
     int material;
     float spec;
     int idx;
-    trace(bool _hit,float3 _p,float3 _n,float3 _color,int _material){
-        hit=_hit;
-        p=_p;
-        n=_n;
-        color=_color;
-        material=_material;
-        spec=0;
-        idx=0;
-    }
     trace(){
         hit=false;
         p=float3(0.);
@@ -452,7 +440,8 @@ void setTraceObj(thread isec &I,thread trace &tr,constant sceneObject &s,ray r,
 }
 
 trace raytrace(ray r,float3 bg,constant Uniforms &uni [[buffer(2)]]){
-    trace tr=trace(false,float3(0.),float3(0.),bg,0);
+    trace tr;
+    tr.color=bg;
     float minD=1e10;
     for(int i=0;i<uni.objNum;i++){
         constant sceneObject &s=uni.objs[i];
@@ -505,6 +494,12 @@ float rand(ray r,constant Uniforms &uni [[buffer(2)]],int n=10){
     return rnd;
 }
 
+float3 stars(float3 v,constant Uniforms &uni [[buffer(2)]]){
+    float col=0;
+    for(int i=0;i<NUM_STARS;i++) col+=pow(dot(v,uni.stars[i]),10000);
+    return clamp(float3(col),0,1);
+}
+
 float3 skycolor(ray r,constant Uniforms &uni [[buffer(2)]]){
     float spec=1-step(dot(r.v,-uni.light),.999);
     spec=10*pow(max(dot(r.v,-uni.light),0.),1003);
@@ -516,9 +511,10 @@ float3 skycolor(ray r,constant Uniforms &uni [[buffer(2)]]){
     
     sky+=1.5*float3(.5,0,1)*(1-exp(-.2*abs(phi-PI/2)));
     
-//    float3 noise=float3(rand(r,uni));
-//
-//    sky+=step(noise,.00001);
+//    sky+=stars(r.v,uni);
+//    float3 noise=float3(rand(r,uni,10));
+//    sky+=noise;//pow(step(noise,.00001),10);
+    
     return clamp(sky,0,1);
 }
 
@@ -529,7 +525,7 @@ float3 radiate(ray r,float3 bg,constant Uniforms &uni [[buffer(2)]],
     float a=-1;
     for(int i=0;i<20;i++){
         tr=raytrace(r,bg,uni);
-        if(tr.material==DIFFUSE || !tr.hit) break;
+        if(tr.material==DIFFUSE || tr.material==EMISSIVE || !tr.hit) break;
         float3 nv(0);
         float3 reflected=reflect(r.v,tr.n);
         
@@ -558,8 +554,7 @@ float3 radiate(ray r,float3 bg,constant Uniforms &uni [[buffer(2)]],
             }break;
             case SCREEN:{
                 float3 p_screen=m4v3(uni.objs[tr.idx].inverse,tr.p,true);
-                float2 uv=p_screen.xy;
-                float3 ray_dir=normalize(float3(uv.x,uv.y,-uni.zoom));
+                float3 ray_dir=normalize(float3(p_screen.x,p_screen.y,-uni.zoom));
                 ray r1(float3(0),ray_dir);
                 r1=r1.transform(uni.virtCamTransform);
                 nv=normalize(r1.v);
@@ -656,7 +651,14 @@ float3 pathtrace(ray R,int samples,float3 bg,
 
 }
 
-
+float2 get_uv(uint2 id,float2 res){
+    float2 uv=float2(id)/res;
+    float aspect=res.x/res.y;
+    uv-=.5;
+    uv.x*=aspect;
+    uv.y*=-1;
+    return uv;
+}
 
 
 kernel void compute(uint2 id [[thread_position_in_grid]],
@@ -664,21 +666,8 @@ kernel void compute(uint2 id [[thread_position_in_grid]],
                     constant Uniforms &uni [[buffer(2)]],
                     texture2d<float, access::sample> prev_frame [[texture(1)]]){
    
-    constexpr sampler colsamp(mip_filter::linear,
-                              mag_filter::linear,
-                              min_filter::linear);
-
-    
-    float2 uv=float2(id)/uni.iRes;
-    float aspect=uni.iRes.x/uni.iRes.y;
-    uv-=.5;
-    uv.x*=aspect;
-    uv.y*=-1;
-    
-    float4 prev_col=prev_frame.sample(colsamp,float2(id)/float2(uni.iRes));
-    
+    float2 uv=get_uv(id,uni.iRes);
     float3 v=normalize(float3(uv.x,uv.y,-uni.zoom));
-//    v=m4v3(uni.viewTransform,v,false);//look(v,uni);
     
     ray r=ray(float3(0),v);
     r=r.transform(uni.cameraTransform*uni.viewTransform);
@@ -689,6 +678,9 @@ kernel void compute(uint2 id [[thread_position_in_grid]],
     
     float3 col(1);
     bool rfr=false;
+    
+//    output.write(float4(sky,1),id);
+//    return;
     
 
 #ifndef PATH_TRACE
@@ -703,6 +695,10 @@ kernel void compute(uint2 id [[thread_position_in_grid]],
     
     output.write(float4(col,1.0),id);
 #else
+    constexpr sampler colsamp(mip_filter::linear,
+                              mag_filter::linear,
+                              min_filter::linear);
+    float4 prev_col=prev_frame.sample(colsamp,float2(id)/float2(uni.iRes));
     col=pathtrace(r,1,sky,uni)+.1*radiate(r,sky,uni,rfr,0);
     output.write(float4(col,1.0)+.91*prev_col,id);
 

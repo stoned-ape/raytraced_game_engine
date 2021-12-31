@@ -56,6 +56,7 @@ typedef struct{
 }sceneObject;
 
 #define MAX_OBJECTS 40
+#define NUM_STARS 100
 
 typedef struct{
     float iTime;
@@ -74,6 +75,7 @@ typedef struct{
     matrix_float4x4 virtCamInverse;
     float zoom;
     sceneObject objs[MAX_OBJECTS];
+    vector_float3 stars[NUM_STARS];
 }Uniforms;
 
 

@@ -115,6 +115,14 @@ class Renderer:NSObject,MTKViewDelegate{
         iRes=vec2(float(size.width),float(size.height))
     }
     func start(){
+        var stars:[vec3]=[]
+        for i in 0..<NUM_STARS{
+            stars.append(normalize(
+                vec3(2*rand()-1,2*rand()-1,2*rand()-1)
+            ))
+        }
+        memcpy(&uniforms[0].stars,&stars,sizeof(vec3(0))*int(NUM_STARS))
+        
         for i in 0..<128{
             keyDown[char(UnicodeScalar(i)!)]=false
         }
@@ -190,8 +198,11 @@ class Renderer:NSObject,MTKViewDelegate{
     }
     func update(){
         root.updateTree()
+#if os(OSX)
         let bottomLeft=vec2(float(globalwindow!.frame.minX),float(globalwindow!.frame.minY))
- 
+#elseif os(iOS)
+        let bottomLeft=vec2(0,0)
+#endif
         frameCount+=1
         frameRate=float(maxBuffersInFlight)/(_itime()-uniforms[0].iTime)
         uniforms[0].iTime=_itime()
