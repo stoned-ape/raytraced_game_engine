@@ -11,7 +11,6 @@
 		2E457551277F029A00778E29 /* makefile in Sources */ = {isa = PBXBuildFile; fileRef = 2E457550277F029A00778E29 /* makefile */; };
 		2E457561277F5CCC00778E29 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2E457560277F5CCC00778E29 /* Assets.xcassets */; };
 		2E457564277F5CCC00778E29 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2E457563277F5CCC00778E29 /* Preview Assets.xcassets */; };
-		2E457567277F5CCD00778E29 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2E457565277F5CCD00778E29 /* LaunchScreen.storyboard */; };
 		2E457571277F609700778E29 /* gameObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EDC51C6261D52CF0015C403 /* gameObject.swift */; };
 		2E457574277F62E600778E29 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2EDC51C7261D52D00015C403 /* Shaders.metal */; };
 		2E45757E277F67F400778E29 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EDC51C1261D52B30015C403 /* Renderer.swift */; };
@@ -218,7 +217,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2E45758B277F6E2100778E29 /* black.png in Resources */,
-				2E457567277F5CCD00778E29 /* LaunchScreen.storyboard in Resources */,
 				2E457564277F5CCC00778E29 /* Preview Assets.xcassets in Resources */,
 				2E457561277F5CCC00778E29 /* Assets.xcassets in Resources */,
 			);
