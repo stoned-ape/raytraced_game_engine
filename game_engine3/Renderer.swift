@@ -63,7 +63,7 @@ class Renderer:NSObject,MTKViewDelegate{
     
     override init(){
         #if os(iOS)
-        motion_manager.startDeviceMotionUpdates()
+        motion_manager.startDeviceMotionUpdates(using: .xArbitraryZVertical)
         if !motion_manager.isDeviceMotionAvailable{
             print("error")
         }
@@ -305,7 +305,7 @@ class Renderer:NSObject,MTKViewDelegate{
             vec4(float(cmmat.m31),float(cmmat.m32),float(cmmat.m33),0),
             vec4(0,0,0,1)
         )
-        viewTransform=cmmat4
+        viewTransform=rotx(-PI/2)*cmmat4
         #endif
         if(keyDown[char("a")]!){
             let d = +speed*vec3(-cos(theta),0,-sin(theta))
