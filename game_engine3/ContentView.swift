@@ -47,9 +47,7 @@ struct ContentView:View{
     @State private var scale:float=1
     var body:some View{
         VStack{
-            
             gameview(bind:bindings(geo:$geo,mat:$mat,on:$on,zdist:$zdist,scale:$scale))
-            
             HStack{
                 Spacer()
                 VStack{

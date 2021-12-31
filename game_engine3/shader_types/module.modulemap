@@ -1,0 +1,4 @@
+module shader_types{
+	header "../game_engine3-Bridging-Header.h"
+	export *
+}

@@ -7,6 +7,9 @@
 import Metal
 import MetalKit
 import simd
+#if canImport(shader_types)
+import shader_types
+#endif
 
 let alignedUniformsSize=(MemoryLayout<Uniforms>.size + 0xFF) & -0x100
 let maxBuffersInFlight=3

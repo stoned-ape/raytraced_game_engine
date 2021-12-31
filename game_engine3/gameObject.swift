@@ -11,6 +11,10 @@ import MetalKit
 import simd
 import Dispatch
 import GameKit
+#if canImport(shader_types)
+import shader_types
+#endif
+
 
 typealias float=Float
 typealias double=Double
