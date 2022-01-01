@@ -80,6 +80,7 @@ typedef struct{
     matrix_float4x4 virtCamInverse;
     float zoom;
     bool vr;
+    bool pathtrace;
     sceneObject objs[MAX_OBJECTS];
     vector_float3 stars[NUM_STARS];
 }Uniforms;

@@ -660,9 +660,10 @@ float2 get_uv(uint2 id,float2 res){
     return uv;
 }
 
-float2 get_vr_uv(uint2 id,float2 res){
-    id.y%=int(res.y/2);
-    float2 uv=get_uv(id,res/float2(1,2));
+float2 get_vr_uv(uint2 id,float2 res,bool ios){
+    res[ios]/=2;
+    id[ios]%=int(res[ios]);
+    float2 uv=get_uv(id,res);
     return uv;
 }
 
@@ -674,14 +675,22 @@ kernel void compute(uint2 id [[thread_position_in_grid]],
     ray r(0,0);
     float2 uv=0;
     if(uni.vr){
-        uv=get_vr_uv(id,uni.iRes);
         float eyedist=1;
-        float focaldist=30;
+        float focaldist=10;
         float thetaeye=atan2(eyedist/2,focaldist);
+#ifdef __METAL_IOS__
+        uv=get_vr_uv(id,uni.iRes,true);
         r.v=normalize(float3(uv.x,uv.y,-uni.zoom));
         float sgn=id.y<uni.iRes.y/2?-1:1;
         r.p=float3(0,-sgn*eyedist/2,0);
         r.v=m4v3(rotx4(-sgn*thetaeye),r.v,false);
+#else
+        uv=get_vr_uv(id,uni.iRes,false);
+        r.v=normalize(float3(uv.x,uv.y,-uni.zoom));
+        float sgn=id.x<uni.iRes.x/2?-1:1;
+        r.p=float3(sgn*eyedist/2,0,0);
+        r.v=m4v3(roty4(-sgn*thetaeye),r.v,false);
+#endif
         r=r.transform(uni.cameraTransform*uni.viewTransform);
     }else{
         uv=get_uv(id,uni.iRes);
@@ -696,26 +705,23 @@ kernel void compute(uint2 id [[thread_position_in_grid]],
     bool rfr=false;
     
     
-
-#ifndef PATH_TRACE
-    
-    float3 red=radiate(r,sky,uni,rfr,0);
-    if(rfr){
-        float3 grn=radiate(r,sky,uni,rfr,1);
-        float3 blu=radiate(r,sky,uni,rfr,2);
-        col=float3(red.x,grn.y,blu.z);
-    }else col=red;
-    col+=float3(step(length(uv),.005));
-    
-    output.write(float4(col,1.0),id);
-#else
-    constexpr sampler colsamp(mip_filter::linear,
-                              mag_filter::linear,
-                              min_filter::linear);
-    float4 prev_col=prev_frame.sample(colsamp,float2(id)/float2(uni.iRes));
-    col=pathtrace(r,1,sky,uni)+.1*radiate(r,sky,uni,rfr,0);
-    output.write(float4(col,1.0)+.91*prev_col,id);
-#endif
+    if(!uni.pathtrace){
+        float3 red=radiate(r,sky,uni,rfr,0);
+        if(rfr){
+            float3 grn=radiate(r,sky,uni,rfr,1);
+            float3 blu=radiate(r,sky,uni,rfr,2);
+            col=float3(red.x,grn.y,blu.z);
+        }else col=red;
+        col+=float3(step(length(uv),.005));
+        output.write(float4(col,1.0),id);
+    }else{
+        constexpr sampler colsamp(mip_filter::linear,
+                                  mag_filter::linear,
+                                  min_filter::linear);
+        float4 prev_col=prev_frame.sample(colsamp,float2(id)/float2(uni.iRes));
+        col=pathtrace(r,1,sky,uni)+.1*radiate(r,sky,uni,rfr,0);
+        output.write(float4(col,1.0)+.91*prev_col,id);
+    }
      
 }
 

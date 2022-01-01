@@ -39,6 +39,7 @@ class Renderer:NSObject,MTKViewDelegate{
     var cameraTransform=id()
     var viewTransform=id()
     var vr=true
+    var pathtrace=false
     
     var keyDown:[char:bool]=[:]
     var zoom:float=0.7
@@ -231,6 +232,7 @@ class Renderer:NSObject,MTKViewDelegate{
         uniforms[0].iRes=iRes
         uniforms[0].light=normalize(light)
         uniforms[0].vr=vr
+        uniforms[0].pathtrace=pathtrace
         if virtCam != nil{
             uniforms[0].virtCamTransform=virtCam!.transform
             uniforms[0].virtCamInverse=virtCam!.transform.inverse
