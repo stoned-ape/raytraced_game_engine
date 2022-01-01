@@ -11,6 +11,11 @@
 #ifdef __METAL_VERSION__
 #define NS_ENUM(_type, _name) enum _name : _type _name; enum _name : _type
 #define NSInteger metal::int32_t
+
+#ifdef __METAL_IOS__
+#pragma message "iOS"
+#endif
+
 #else
 #import <Foundation/Foundation.h>
 #import <sys/time.h>
@@ -74,9 +79,11 @@ typedef struct{
     matrix_float4x4 virtCamTransform;
     matrix_float4x4 virtCamInverse;
     float zoom;
+    bool vr;
     sceneObject objs[MAX_OBJECTS];
     vector_float3 stars[NUM_STARS];
 }Uniforms;
+
 
 
     

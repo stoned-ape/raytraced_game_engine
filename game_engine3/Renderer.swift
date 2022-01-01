@@ -33,11 +33,12 @@ class Renderer:NSObject,MTKViewDelegate{
     
     var iMouse=vec2(400,300)
     var iRes=vec2(556,411)
-    var camP=vec3(0,0,5)
+    var camP=vec3(-8,1,2)
     var camV=vec3(0,0,-1)
     var light=vec3(0,1,0)
     var cameraTransform=id()
     var viewTransform=id()
+    var vr=true
     
     var keyDown:[char:bool]=[:]
     var zoom:float=0.7
@@ -149,7 +150,7 @@ class Renderer:NSObject,MTKViewDelegate{
         
         light = -vec3(2,2.5,3)
         uniforms[0].sky=vec3(0)
-        camP=vec3(0,-1,5)
+        
         cameraTransform=trans(camP)
         root.visible=false
         container.visible=false
@@ -218,17 +219,18 @@ class Renderer:NSObject,MTKViewDelegate{
     }
     func update(){
         root.updateTree()
-#if os(OSX)
+        #if os(OSX)
         let bottomLeft=vec2(float(globalwindow!.frame.minX),float(globalwindow!.frame.minY))
-#elseif os(iOS)
+        #elseif os(iOS)
         let bottomLeft=vec2(0,0)
-#endif
+        #endif
         frameCount+=1
         frameRate=float(maxBuffersInFlight)/(_itime()-uniforms[0].iTime)
         uniforms[0].iTime=_itime()
         uniforms[0].iMouse=iMouse-bottomLeft
         uniforms[0].iRes=iRes
         uniforms[0].light=normalize(light)
+        uniforms[0].vr=vr
         if virtCam != nil{
             uniforms[0].virtCamTransform=virtCam!.transform
             uniforms[0].virtCamInverse=virtCam!.transform.inverse

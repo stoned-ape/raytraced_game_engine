@@ -660,18 +660,34 @@ float2 get_uv(uint2 id,float2 res){
     return uv;
 }
 
+float2 get_vr_uv(uint2 id,float2 res){
+    id.y%=int(res.y/2);
+    float2 uv=get_uv(id,res/float2(1,2));
+    return uv;
+}
 
 kernel void compute(uint2 id [[thread_position_in_grid]],
                     texture2d<float, access::write> output [[texture(0)]],
                     constant Uniforms &uni [[buffer(2)]],
                     texture2d<float, access::sample> prev_frame [[texture(1)]]){
-   
-    float2 uv=get_uv(id,uni.iRes);
-    float3 v=normalize(float3(uv.x,uv.y,-uni.zoom));
     
-    ray r=ray(float3(0),v);
-    r=r.transform(uni.cameraTransform*uni.viewTransform);
-    
+    ray r(0,0);
+    float2 uv=0;
+    if(uni.vr){
+        uv=get_vr_uv(id,uni.iRes);
+        float eyedist=1;
+        float focaldist=30;
+        float thetaeye=atan2(eyedist/2,focaldist);
+        r.v=normalize(float3(uv.x,uv.y,-uni.zoom));
+        float sgn=id.y<uni.iRes.y/2?-1:1;
+        r.p=float3(0,-sgn*eyedist/2,0);
+        r.v=m4v3(rotx4(-sgn*thetaeye),r.v,false);
+        r=r.transform(uni.cameraTransform*uni.viewTransform);
+    }else{
+        uv=get_uv(id,uni.iRes);
+        r.v=normalize(float3(uv.x,uv.y,-uni.zoom));
+        r=r.transform(uni.cameraTransform*uni.viewTransform);
+    }
     
     
     float3 sky=skycolor(r,uni);
@@ -679,8 +695,6 @@ kernel void compute(uint2 id [[thread_position_in_grid]],
     float3 col(1);
     bool rfr=false;
     
-//    output.write(float4(sky,1),id);
-//    return;
     
 
 #ifndef PATH_TRACE
@@ -701,9 +715,6 @@ kernel void compute(uint2 id [[thread_position_in_grid]],
     float4 prev_col=prev_frame.sample(colsamp,float2(id)/float2(uni.iRes));
     col=pathtrace(r,1,sky,uni)+.1*radiate(r,sky,uni,rfr,0);
     output.write(float4(col,1.0)+.91*prev_col,id);
-
-//    float3 noise=float3(rand(r,uni));
-//    col=noise;
 #endif
      
 }
