@@ -12,6 +12,8 @@ import shader_types
 #endif
 #if os(iOS)
 import CoreMotion
+import ARKit
+import RealityKit
 #endif
 
 
@@ -38,7 +40,6 @@ class Renderer:NSObject,MTKViewDelegate{
     var light=vec3(0,1,0)
     var cameraTransform=id()
     var viewTransform=id()
-    var vr=true
     var pathtrace=false
     
     var keyDown:[char:bool]=[:]
@@ -61,6 +62,10 @@ class Renderer:NSObject,MTKViewDelegate{
     
     #if os(iOS)
     let motion_manager=CMMotionManager()
+    var arview:ARView?
+    var vr=true
+    #elseif os(OSX)
+    var vr=false
     #endif
     
     override init(){
@@ -71,8 +76,9 @@ class Renderer:NSObject,MTKViewDelegate{
         }
         while !motion_manager.isDeviceMotionActive{}
         while nil==motion_manager.deviceMotion{
-            print("nil")
+            //print("nil")
         }
+        arview=nil
         #endif
         self.device = MTLCreateSystemDefaultDevice()!
         self.commandQueue = self.device.makeCommandQueue()!
@@ -88,7 +94,6 @@ class Renderer:NSObject,MTKViewDelegate{
         let textureloader=MTKTextureLoader(device: self.device)
         let url=Bundle.main.url(forResource: "black", withExtension: "png")!
         prev_frame=try! textureloader.newTexture(URL: url, options: [:])
-        
         super.init()
         start()
     }
@@ -295,7 +300,7 @@ class Renderer:NSObject,MTKViewDelegate{
         let theta = map(uniforms[0].iMouse.x,0,iRes.x,-PI,PI);
         let phi = map(uniforms[0].iMouse.y,0,iRes.y,-PI/2,PI/2);
         let speed:float=0.1*48.0/frameRate
-        print(frameRate," ",_itime())
+//        print(frameRate," ",_itime())
         
         
         #if os(OSX)
@@ -310,6 +315,13 @@ class Renderer:NSObject,MTKViewDelegate{
             vec4(0,0,0,1)
         )
         viewTransform=rotx(-PI/2)*cmmat4
+        if arview != nil{
+            print("ar camera")
+            var pos=10*arview!.cameraTransform.translation
+            pos=m4v3(roty(PI/2),pos,false)
+            pos*=vec3(-1,1,-1)
+            cameraTransform=trans(pos)
+        }
         #endif
         if(keyDown[char("a")]!){
             let d = +speed*vec3(-cos(theta),0,-sin(theta))

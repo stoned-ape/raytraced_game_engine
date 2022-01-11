@@ -7,6 +7,10 @@
 
 import SwiftUI
 import MetalKit
+#if os(iOS)
+import ARKit
+import RealityKit
+#endif
 
 
 enum Material:string,CaseIterable{
@@ -47,8 +51,16 @@ struct ContentView:View{
     @State private var scale:float=1
     var body:some View{
         VStack{
-            gameview(bind:bindings(geo:$geo,mat:$mat,on:$on,zdist:$zdist,scale:$scale))
-#if os(OSX)
+            ZStack{
+                #if os(iOS)
+                let av=arview()
+                av
+                #endif
+                let gv=gameview(bind:bindings(geo:$geo,mat:$mat,on:$on,zdist:$zdist,scale:$scale),
+                                arview:av.arview)
+                gv
+            }
+            #if os(OSX)
             HStack{
                 Spacer()
                 VStack{
@@ -69,7 +81,7 @@ struct ContentView:View{
                 }
                 Spacer()
             }
-#endif
+            #endif
         }
     }
 }
@@ -131,17 +143,31 @@ struct gameview:NSViewRepresentable{
 
 #elseif os(iOS)
 
+struct arview:UIViewRepresentable{
+    let arview=ARView(frame:.zero)
+    let anchor=AnchorEntity()
+    func makeUIView(context: Context)->some UIView{
+        arview.scene.anchors.append(anchor)
+//        arview.session.delegate=del
+        print("arview init")
+        return arview
+    }
+    func updateUIView(_ uiView: UIViewType, context: Context){}
+}
+
+
 struct gameview:UIViewRepresentable{
     let mtkview=MTKView()
     var del=Renderer()
-    //var mouseLocation: UIPoint { NSEvent.mouseLocation }
     var bind:bindings
+    var arview:ARView
     func makeUIView(context: Context)->some UIView{
         mtkview.delegate=del
         mtkview.device=del.device
         mtkview.framebufferOnly=false
         set_handlers()
         del.bind=bind
+        del.arview=arview
         return mtkview
     }
     func updateUIView(_ uiView: UIViewType, context: Context){}

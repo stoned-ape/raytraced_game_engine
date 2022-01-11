@@ -28,5 +28,7 @@
 	<string>NSApplication</string>
 	<key>NSMotionUsageDescription</key>
 	<string>trust me bro</string>
+	<key>NSCameraUsageDescription</key>
+	<string>trust me bro</string>
 </dict>
 </plist>
