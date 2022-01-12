@@ -55,10 +55,14 @@ struct ContentView:View{
                 #if os(iOS)
                 let av=arview()
                 av
-                let gv=gameview(bind:bindings(geo:$geo,mat:$mat,on:$on,zdist:$zdist,scale:$scale),
+                let gv=gameview(bind:bindings(geo:$geo,mat:$mat,
+                                              on:$on,zdist:$zdist,
+                                              scale:$scale),
                                 arview:av.arview)
                 #elseif os(OSX)
-                let gv=gameview(bind:bindings(geo:$geo,mat:$mat,on:$on,zdist:$zdist,scale:$scale))
+                let gv=gameview(bind:bindings(geo:$geo,mat:$mat,
+                                              on:$on,zdist:$zdist,
+                                              scale:$scale))
                 #endif
                 gv
             }

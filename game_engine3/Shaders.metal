@@ -201,6 +201,7 @@ struct trace{
     int material;
     float spec;
     int idx;
+    float dist;
     trace(){
         hit=false;
         p=float3(0.);
@@ -209,6 +210,7 @@ struct trace{
         material=0;
         spec=0;
         idx=0;
+        dist=1E20;
     }
 };
 
@@ -464,6 +466,7 @@ trace raytrace(ray r,float3 bg,constant Uniforms &uni [[buffer(2)]]){
         }
 #undef GEO_CASE
     }
+    tr.dist=minD;
     return tr;
 }
 int f2i(float f){
@@ -676,7 +679,10 @@ kernel void compute(uint2 id [[thread_position_in_grid]],
     float2 uv=0;
     if(uni.vr){
         float eyedist=1;
-        float focaldist=10;
+        ray forward(float3(0),float3(0,0,-1));
+        forward=forward.transform(uni.cameraTransform*uni.viewTransform);
+        trace tr=raytrace(forward,float3(0),uni);
+        float focaldist=tr.dist;
         float thetaeye=atan2(eyedist/2,focaldist);
 #ifdef __METAL_IOS__
         uv=get_vr_uv(id,uni.iRes,true);

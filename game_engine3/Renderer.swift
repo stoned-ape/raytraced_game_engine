@@ -65,7 +65,7 @@ class Renderer:NSObject,MTKViewDelegate{
     var arview:ARView?
     var vr=true
     #elseif os(OSX)
-    var vr=false
+    var vr=true
     #endif
     
     override init(){
@@ -174,10 +174,10 @@ class Renderer:NSObject,MTKViewDelegate{
         //root.addLeaf(portals!.setTransform(rotx(0)*trans(0,0,1)*roty(-0*PI/2)))
         
         
-//        var oc=octahedron().setMaterial(.glass).setTransform(trans(-1.5,0,3))
 
-//        root.addLeaf(oc)
-//        oc.instanceUpdate={this in this.transform*=roty(0.03) }
+
+
+
         
         //gound plane
         var p1=plane(vec3(0,-2,0),vec3(0,1,0))
@@ -188,16 +188,6 @@ class Renderer:NSObject,MTKViewDelegate{
 
 
         root.addLeaf(axis(trans(3,3,3)))
-
-//        let rb=box(vec3(0,0,-10),vec3(1),.specular)
-//
-//        rb.addLeaf(box(vec3(+3,0,-3),vec3(1,2,1),.diffuse));
-//        rb.addLeaf(box(vec3(-3,0,-3),vec3(1,2,1),.diffuse));
-//        rb.addLeaf(box(vec3(+3,0,+3),vec3(1,2,1),.diffuse));
-//        rb.addLeaf(box(vec3(-3,0,+3),vec3(1,2,1),.diffuse));
-//
-//        rb.addLeaf(box(vec3(0,3,0),vec3(4,1,4),.diffuse));
-//        root.addLeaf(rb)
 
         let s1=sphere(vec3(0,0,0),1).setTransform(scale(0.125,1,1))
 
@@ -217,7 +207,7 @@ class Renderer:NSObject,MTKViewDelegate{
         root.addLeaf(virtCam!)
         
         
-        var lb=box()
+        var lb=box().setTransform(trans(0,0,-4))
         lb.material=EMISSIVE
         root.addLeaf(lb)
         

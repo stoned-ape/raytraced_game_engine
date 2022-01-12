@@ -61,7 +61,7 @@ typedef struct{
 }sceneObject;
 
 #define MAX_OBJECTS 40
-#define NUM_STARS 100
+#define NUM_STARS 1
 
 typedef struct{
     float iTime;
